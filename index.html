@@ -3,235 +3,465 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Biometria Facial - Frontend + Supabase</title>
+  <title>App Facial — Supabase + Frontend (arquivo único)</title>
   <style>
-    body { font-family: Arial, Helvetica, sans-serif; margin: 20px; max-width: 900px; }
-    h1 { font-size: 20px; margin-bottom: 8px; }
-    #videoWrap { display:flex; gap:20px; align-items:flex-start; }
-    video { border: 1px solid #ddd; width: 320px; height: 240px; background: #000; }
-    #controls { display:flex; flex-direction:column; gap:8px; width: 100%; max-width: 520px; }
-    input, button, select { padding:8px; font-size:14px; }
-    .row { display:flex; gap:8px; }
-    .small { font-size:12px; color:#666 }
-    #log { margin-top:12px; white-space:pre-wrap; background:#f9f9f9; padding:10px; border:1px solid #eee; height:120px; overflow:auto }
+    /* ===== estilos ===== */
+    :root{font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
+    body{margin:0;padding:18px;background:#f6f7fb;color:#111}
+    main{max-width:980px;margin:0 auto}
+    header{display:flex;gap:12px;align-items:center;justify-content:space-between}
+    h1{font-size:18px;margin:0}
+    .camera{position:relative;width:100%;max-width:720px;margin-top:12px}
+    video{width:100%;height:auto;border-radius:8px;background:#000}
+    canvas{position:absolute;left:0;top:0;pointer-events:none}
+    .controls{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap}
+    .controls input[type="text"]{padding:8px;flex:1;min-width:220px;border-radius:6px;border:1px solid #d0d3d9}
+    .controls button{padding:10px 14px;border-radius:6px;border:1px solid #cfcfcf;background:#fff;cursor:pointer}
+    .output{margin-top:16px;background:#fff;padding:12px;border-radius:8px;border:1px solid #e0e0e0}
+    pre{white-space:pre-wrap;margin:0;font-family:inherit}
+    #faceList{margin-top:8px;padding-left:18px}
+    .small{font-size:13px;color:#666}
+    .row{display:flex;gap:8px;align-items:center}
+    .samples { display:flex; gap:6px; flex-wrap:wrap; margin-top:8px }
+    .sample-img{width:64px;height:64px;object-fit:cover;border-radius:6px;border:1px solid #ddd}
+    footer{margin-top:18px;color:#666;font-size:13px}
   </style>
 </head>
 <body>
-  <h1>App de Biometria Facial (Front-end) — Supabase</h1>
-
-  <div class="small">Insira o seu SUPABASE_URL e SUPABASE_ANON_KEY abaixo (siga as notas de segurança no final)</div>
-
-  <div class="row" style="margin-top:8px;">
-    <input id="supabaseUrl" placeholder="https://ecfgvhndomgqthxzqigu.supabase.co" style="flex:1" />
-    <input id="supabaseKey" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVjZmd2aG5kb21ncXRoeHpxaWd1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxMjMxMDAsImV4cCI6MjA4MDY5OTEwMH0.CfSXWwHXpBA-CPfP0ZaJI2u19TCRK5sX5dlRf46z7CQ" style="flex:1" />
-  </div>
-
-  <div style="margin-top:12px" id="videoWrap">
-    <video id="video" autoplay playsinline></video>
-
-    <div id="controls">
-      <div class="row">
-        <input id="userId" placeholder="user id (ex: email ou uid)" />
-        <button id="btnSignIn">Entrar (anon)</button>
-      </div>
-
-      <div class="row">
-        <button id="btnStart">Iniciar câmera</button>
-        <button id="btnLoadModel">Carregar modelo</button>
-      </div>
-
-      <div class="row">
-        <button id="btnRegister">Cadastrar rosto</button>
-        <button id="btnLogin">Login por rosto</button>
-      </div>
-
-      <div class="row">
-        <select id="searchMode">
-          <option value="byUser">Comparar com user_id</option>
-          <option value="all">Comparar com todos (nearest)</option>
-        </select>
-        <input id="threshold" placeholder="threshold (ex: 0.6)" value="0.6" style="width:110px" />
-      </div>
-
-      <div class="small">Observações: use user_id consistente para cadastrar e autenticar, ou use comparação global</div>
+<main>
+  <header>
+    <div>
+      <h1>Morais Piscinas — Reconhecimento Facial (único arquivo)</h1>
+      <div class="small">Front-end + Supabase Storage + embeddings (jsonb)</div>
     </div>
-  </div>
+    <div class="small">Leia comentários no topo do arquivo para instruções</div>
+  </header>
 
-  <div id="log"></div>
+  <!-- CAMERA / OVERLAY -->
+  <section class="camera">
+    <video id="video" autoplay muted playsinline></video>
+    <canvas id="overlay"></canvas>
+  </section>
 
-  <!-- Import libs via CDN (module) -->
-  <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/module/supabase.js';
-    import Human from 'https://cdn.jsdelivr.net/npm/human/dist/human.esm.js';
+  <!-- CONTROLES -->
+  <section class="controls">
+    <input id="personName" type="text" placeholder="Nome para cadastro (ex: Andrey)" />
+    <button id="btnCapture">Capturar amostra</button>
+    <button id="btnSavePerson">Salvar pessoa (usar amostras)</button>
+    <button id="btnRecognize">Reconhecer rosto</button>
+    <button id="btnList">Listar rostos</button>
+    <button id="btnClear">Limpar sobreposição</button>
+  </section>
 
-    // UI elements
-    const video = document.getElementById('video');
-    const btnStart = document.getElementById('btnStart');
-    const btnLoadModel = document.getElementById('btnLoadModel');
-    const btnRegister = document.getElementById('btnRegister');
-    const btnLogin = document.getElementById('btnLogin');
-    const supabaseUrlInput = document.getElementById('supabaseUrl');
-    const supabaseKeyInput = document.getElementById('supabaseKey');
-    const userIdInput = document.getElementById('userId');
-    const logEl = document.getElementById('log');
-    const btnSignIn = document.getElementById('btnSignIn');
-    const searchModeEl = document.getElementById('searchMode');
-    const thresholdEl = document.getElementById('threshold');
+  <!-- SAMPLES -->
+  <section class="output">
+    <h2>Amostras capturadas (não salvas)</h2>
+    <div class="small">Clique em "Capturar amostra" várias vezes para criar samples por pessoa</div>
+    <div id="samples" class="samples"></div>
 
-    let supabase = null;
-    let human = null;
-    let stream = null;
+    <h2 style="margin-top:12px">Resultado</h2>
+    <pre id="log">Carregue os modelos e inicie a câmera</pre>
 
-    function log(...args){
-      console.log(...args);
-      logEl.textContent += args.map(a => (typeof a === 'object' ? JSON.stringify(a) : String(a))).join(' ') + '\\n';
-      logEl.scrollTop = logEl.scrollHeight;
+    <h3 style="margin-top:12px">Rostos cadastrados</h3>
+    <ul id="faceList"></ul>
+  </section>
+
+  <footer>
+    <div class="small">
+      Observações importantes:
+      <ol>
+        <li>Coloque os pesos do face-api.js em <code>/models/</code> no mesmo host (veja comentários no topo)</li>
+        <li>Requer HTTPS para acessar câmera em dispositivos móveis</li>
+        <li>Crie um bucket Supabase Storage chamado <code>faces</code> (instruções em comentários)</li>
+      </ol>
+    </div>
+  </footer>
+</main>
+
+<!-- Dependências -->
+<script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+<!-- Usamos a versão modular do supabase via CDN mjs import abaixo -->
+<script type="module">
+/*
+================================================================================
+INSTRUÇÕES RÁPIDAS (leia antes de usar)
+================================================================================
+
+1) MODEL WEIGHTS (obrigatório)
+   - Baixe os arquivos de weights do face-api.js e coloque na pasta "/models" no seu
+     servidor junto com este index.html
+   - Arquivos principais: ssd_mobilenetv1, face_landmark_68, face_recognition
+   - Exemplo: /models/ssd_mobilenetv1_model-weights_manifest.json  e shards
+   - Veja: https://github.com/justadudewhohacks/face-api.js/tree/master/weights
+
+2) SUPABASE (configurar)
+   - Crie projeto no supabase e copiei:
+     SUPABASE_URL e ANON KEY (anon public) — a chave pública ANON pode ficar aqui
+   - Crie um bucket Storage chamado "faces" (public ou privado — abaixo usamos public URL)
+   - Rode SQL (veja o bloco SQL mais abaixo) no SQL Editor do Supabase
+
+3) SQL para criar tabela e policies (cole no SQL editor do Supabase)
+   -- tabela (armazenamos embedding como jsonb e foto_url)
+   create table if not exists faces (
+     id uuid primary key default gen_random_uuid(),
+     name text not null,
+     embedding jsonb not null, -- array de floats
+     photo_url text,           -- url do arquivo no storage (opcional)
+     created_at timestamptz default now()
+   );
+
+   -- habilitar RLS e policies básicas (ajuste conforme necessidade)
+   alter table faces enable row level security;
+
+   create policy "allow insert for anon" on faces
+     for insert
+     to anon
+     with check (true);
+
+   create policy "allow select for anon" on faces
+     for select
+     to anon
+     using (true);
+
+   -- proteção para delete (para evitar que qualquer um apague)
+   create policy "allow delete for authenticated" on faces
+     for delete
+     to authenticated
+     using (true);
+
+   -- se quiser permitir delete via anon (não recomendado), ajuste a policy
+
+4) CRIAR BUCKET (Storage)
+   - No Supabase Console > Storage > Create new bucket
+   - Nome: faces
+   - Public: sim (se quiser servir as imagens diretamente), ou privado e gerar public URLs ao salvar
+
+5) HOSPEDAGEM
+   - Use Vercel, Netlify ou outro (HTTPS obrigatório para câmera mobile)
+   - Coloque a pasta /models e este index.html no mesmo deploy
+
+================================================================================
+FIM DAS INSTRUÇÕES
+================================================================================
+*/
+
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.mjs'
+
+/* ========== CONFIGURAÇÃO SUPABASE ========== 
+   Substitua abaixo pelos seus valores */
+const SUPABASE_URL = 'https://ecfgvhndomgqthxzqigu.supabase.co'
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVjZmd2aG5kb21ncXRoeHpxaWd1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxMjMxMDAsImV4cCI6MjA4MDY5OTEwMH0.CfSXWwHXpBA-CPfP0ZaJI2u19TCRK5sX5dlRf46z7CQ'
+/* =========================================== */
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+// ====== UI ELEMENTS ======
+const video = document.getElementById('video')
+const overlay = document.getElementById('overlay')
+const logEl = document.getElementById('log')
+const faceListEl = document.getElementById('faceList')
+const personNameInput = document.getElementById('personName')
+const btnCapture = document.getElementById('btnCapture')
+const btnSavePerson = document.getElementById('btnSavePerson')
+const btnRecognize = document.getElementById('btnRecognize')
+const btnList = document.getElementById('btnList')
+const btnClear = document.getElementById('btnClear')
+const samplesEl = document.getElementById('samples')
+
+let canvasCtx = null
+let displaySize = null
+let localSamples = [] // { imageBlob, descriptor: Float32Array, dataUrl }
+const RECOGNITION_THRESHOLD = 0.55 // calibrar entre 0.45-0.7
+
+function log(msg) {
+  logEl.textContent = String(msg)
+  console.log(msg)
+}
+function euclideanDistance(a, b) {
+  let sum = 0
+  for (let i = 0; i < a.length; i++) {
+    const d = a[i] - b[i]
+    sum += d * d
+  }
+  return Math.sqrt(sum)
+}
+function float32ToArray(f32) { return Array.from(f32) }
+function arrayToFloat32(arr) { return new Float32Array(arr) }
+
+// ====== CARREGAR MODELOS ======
+async function loadModels() {
+  log('Carregando modelos (aguarde)...')
+  // assume /models/* acessível no mesmo host
+  await faceapi.nets.ssdMobilenetv1.loadFromUri('/models')
+  await faceapi.nets.faceLandmark68Net.loadFromUri('/models')
+  await faceapi.nets.faceRecognitionNet.loadFromUri('/models')
+  log('Modelos carregados')
+}
+
+// ====== CAMERA ======
+async function startCamera() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } })
+    video.srcObject = stream
+    await video.play()
+
+    overlay.width = video.videoWidth || 640
+    overlay.height = video.videoHeight || 480
+    canvasCtx = overlay.getContext('2d')
+    displaySize = { width: overlay.width, height: overlay.height }
+    log('Câmera iniciada')
+  } catch (err) {
+    log('Erro ao iniciar câmera: ' + err.message)
+  }
+}
+
+// ====== CAPTURAR EMBEDDING E FOTO ======
+async function captureSingleFace() {
+  // detect single face and descriptor
+  const detection = await faceapi.detectSingleFace(video).withFaceLandmarks().withFaceDescriptor()
+  if (!detection) return null
+
+  // desenhar box
+  canvasCtx.clearRect(0, 0, overlay.width, overlay.height)
+  const box = detection.detection.box
+  canvasCtx.strokeStyle = '#00FF00'
+  canvasCtx.lineWidth = 2
+  canvasCtx.strokeRect(box.x, box.y, box.width, box.height)
+
+  // capturar imagem (crop para o rosto)
+  // criar canvas temporário
+  const tmp = document.createElement('canvas')
+  tmp.width = Math.round(box.width)
+  tmp.height = Math.round(box.height)
+  const tctx = tmp.getContext('2d')
+  tctx.drawImage(video, box.x, box.y, box.width, box.height, 0, 0, tmp.width, tmp.height)
+
+  const dataUrl = tmp.toDataURL('image/jpeg', 0.85)
+  // converte dataURL para blob
+  const blob = await (await fetch(dataUrl)).blob()
+
+  return { descriptor: detection.descriptor, imageBlob: blob, dataUrl }
+}
+
+// botões: capturar amostra
+btnCapture.addEventListener('click', async () => {
+  btnCapture.disabled = true
+  log('Capturando amostra...')
+  const res = await captureSingleFace()
+  if (!res) {
+    log('Nenhum rosto detectado')
+    btnCapture.disabled = false
+    return
+  }
+  // armazenar localmente até salvar pessoa
+  localSamples.push(res)
+  renderSamples()
+  log('Amostra adicionada (total: ' + localSamples.length + ')')
+  btnCapture.disabled = false
+})
+
+// render samples (miniaturas)
+function renderSamples() {
+  samplesEl.innerHTML = ''
+  if (localSamples.length === 0) {
+    samplesEl.innerHTML = '<div class="small">(nenhuma amostra)</div>'
+    return
+  }
+  for (let i = 0; i < localSamples.length; i++) {
+    const s = localSamples[i]
+    const img = document.createElement('img')
+    img.src = s.dataUrl
+    img.className = 'sample-img'
+    img.title = 'Amostra ' + (i + 1)
+    samplesEl.appendChild(img)
+  }
+}
+
+// salvar pessoa (criar registro com múltiplas amostras -> iremos salvar 1 foto principal + embeddings agregados)
+// estratégia simples: salvar a primeira foto e salvar embeddings como array (podemos salvar apenas a média dos embeddings no futuro)
+btnSavePerson.addEventListener('click', async () => {
+  btnSavePerson.disabled = true
+  const name = (personNameInput.value || '').trim()
+  if (!name) {
+    alert('Digite um nome para esta pessoa antes de salvar')
+    btnSavePerson.disabled = false
+    return
+  }
+  if (localSamples.length === 0) {
+    alert('Nenhuma amostra capturada. Capture ao menos uma')
+    btnSavePerson.disabled = false
+    return
+  }
+
+  log('Salvando pessoa no Supabase...')
+
+  try {
+    // 1) salvar foto principal no storage (usamos a primeira amostra)
+    const first = localSamples[0]
+    const filePath = `faces/${name.replace(/\s+/g,'_')}_${Date.now()}.jpg`
+    const { data: upData, error: upErr } = await supabase.storage.from('faces').upload(filePath, first.imageBlob, {
+      cacheControl: '3600',
+      upsert: false,
+      contentType: 'image/jpeg'
+    })
+    if (upErr) {
+      console.warn('Erro upload storage:', upErr)
+      // pode continuar sem imagem
+    }
+    // gerar public URL (se bucket for público)
+    let publicUrl = null
+    try {
+      const { data: urlData } = supabase.storage.from('faces').getPublicUrl(filePath)
+      publicUrl = urlData.publicUrl
+    } catch (e) {
+      console.warn('Erro gerando publicUrl', e)
     }
 
-    // Inicializar Supabase (quando o usuário clicar)
-    btnSignIn.addEventListener('click', () => {
-      const url = supabaseUrlInput.value.trim();
-      const key = supabaseKeyInput.value.trim();
-      if(!url || !key) { alert('Informe SUPABASE_URL e SUPABASE_ANON_KEY'); return; }
-      supabase = createClient(url, key);
-      log('Supabase inicializado');
-    });
+    // 2) construir embeddings array: guardamos array de arrays (cada amostra)
+    const embeddingsArray = localSamples.map(s => float32ToArray(s.descriptor))
 
-    // Inicia câmera
-    btnStart.addEventListener('click', async () => {
-      try {
-        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
-        video.srcObject = stream;
-        await video.play();
-        log('Câmera iniciada');
-      } catch (err) {
-        log('Erro câmera:', err.message || err);
-      }
-    });
-
-    // Carrega modelo Human.js
-    btnLoadModel.addEventListener('click', async () => {
-      human = new Human({
-        // config mínimo; você pode ajustar para performance/precisão
-        modelBasePath: 'https://cdn.jsdelivr.net/npm/human/models',
-        cache: true,
-        face: { enabled: true, detector: { enabled: true }, mesh: false, description: { enabled: true } },
-        backend: 'webgl'
-      });
-      await human.load();
-      await human.warmup();
-      log('Human.js carregado e pronto');
-    });
-
-    // Gera embedding a partir do video (retorna array de floats)
-    async function gerarEmbedding(){
-      if(!human) throw new Error('Human.js não carregado');
-      if(!video || video.readyState < 2) throw new Error('Vídeo não pronto');
-      // detecta no frame atual
-      const res = await human.detect(video);
-      if(!res || !res.face || res.face.length === 0) return null;
-      const f = res.face[0];
-      if(!f.embedding) return null;
-      return Array.from(f.embedding); // converte TypedArray para array normal
+    // 3) inserir no Supabase table faces
+    const payload = {
+      name,
+      embedding: embeddingsArray, // array de arrays (várias amostras)
+      photo_url: publicUrl
+    }
+    const { data, error } = await supabase.from('faces').insert([payload]).select()
+    if (error) {
+      log('Erro ao inserir no Supabase: ' + error.message)
+      console.error(error)
+      btnSavePerson.disabled = false
+      return
     }
 
-    // Salvar embedding no Supabase
-    async function salvarRosto(userId, embedding){
-      if(!supabase) throw new Error('Supabase não inicializado');
-      const { data, error } = await supabase
-        .from('faces')
-        .insert([{ user_id: userId, embedding }]);
-      if(error) throw error;
-      return data;
+    log(`Pessoa "${name}" salva com sucesso`)
+    // limpar samples locais e UI
+    localSamples = []
+    renderSamples()
+    personNameInput.value = ''
+    renderFaceList()
+  } catch (err) {
+    console.error(err)
+    log('Erro no processo de salvar: ' + err.message)
+  } finally {
+    btnSavePerson.disabled = false
+  }
+})
+
+// reconhecer rosto: captura um embedding e compara com todos os embeddings do banco
+btnRecognize.addEventListener('click', async () => {
+  btnRecognize.disabled = true
+  log('Capturando para reconhecimento...')
+  const res = await captureSingleFace()
+  if (!res) {
+    log('Nenhum rosto detectado')
+    btnRecognize.disabled = false
+    return
+  }
+  const probe = float32ToArray(res.descriptor)
+
+  // buscar todas faces
+  const { data, error } = await supabase.from('faces').select('*')
+  if (error) {
+    log('Erro ao buscar faces: ' + error.message)
+    btnRecognize.disabled = false
+    return
+  }
+  if (!data || data.length === 0) {
+    log('Nenhum rosto cadastrado')
+    btnRecognize.disabled = false
+    return
+  }
+
+  // cada registro tem embedding: array de arrays (amostras). Calculamos menor distância entre probe e qualquer amostra da pessoa
+  let best = { dist: Infinity, face: null }
+  for (const face of data) {
+    const embContainer = face.embedding // array de arrays OR single array
+    if (!embContainer) continue
+    // normalize: if it's single array (one embedding), wrap
+    const samples = Array.isArray(embContainer[0]) ? embContainer : [embContainer]
+    for (const emb of samples) {
+      const dist = euclideanDistance(probe, emb)
+      if (dist < best.dist) {
+        best = { dist, face }
+      }
+    }
+  }
+
+  if (best.dist < RECOGNITION_THRESHOLD) {
+    log(`Reconhecido: ${best.face.name} (dist=${best.dist.toFixed(4)})`)
+  } else {
+    log(`Desconhecido (menor distância=${best.dist.toFixed(4)})`)
+  }
+  btnRecognize.disabled = false
+})
+
+// listar rostos
+async function renderFaceList() {
+  faceListEl.innerHTML = ''
+  const { data, error } = await supabase.from('faces').select('*').order('created_at', { ascending: true })
+  if (error) {
+    log('Erro ao listar: ' + error.message)
+    return
+  }
+  if (!data || data.length === 0) {
+    faceListEl.innerHTML = '<li>(nenhum cadastro)</li>'
+    return
+  }
+  for (const f of data) {
+    const li = document.createElement('li')
+    // exibir miniaturas de samples se existirem (photo_url)
+    const name = document.createElement('span')
+    name.textContent = `${f.name} — id: ${f.id}`
+    li.appendChild(name)
+
+    if (f.photo_url) {
+      const img = document.createElement('img')
+      img.src = f.photo_url
+      img.style.width = '64px'
+      img.style.height = '64px'
+      img.style.objectFit = 'cover'
+      img.style.marginLeft = '8px'
+      img.style.borderRadius = '6px'
+      img.style.verticalAlign = 'middle'
+      li.appendChild(img)
     }
 
-    // Buscar todos embeddings (ou do user)
-    async function buscarEmbeddings(userId = null){
-      if(!supabase) throw new Error('Supabase não inicializado');
-      let q = supabase.from('faces').select('id,user_id,embedding,created_at');
-      if(userId) q = q.eq('user_id', userId);
-      const { data, error } = await q;
-      if(error) throw error;
-      return data || [];
+    // botão deletar (somente se sua policy permitir; caso contrário falhará)
+    const btn = document.createElement('button')
+    btn.textContent = 'Excluir'
+    btn.style.marginLeft = '12px'
+    btn.onclick = async () => {
+      if (!confirm('Confirmar exclusão de ' + f.name + ' ?')) return
+      const { error } = await supabase.from('faces').delete().eq('id', f.id)
+      if (error) {
+        alert('Erro ao excluir: ' + error.message)
+      } else {
+        renderFaceList()
+      }
     }
+    li.appendChild(btn)
+    faceListEl.appendChild(li)
+  }
+}
 
-    // Distância Euclidiana
-    function distanciaEuclidiana(a, b){
-      if(a.length !== b.length) throw new Error('Dimensões diferentes');
-      let s = 0;
-      for(let i=0;i<a.length;i++){
-        const d = (a[i] - b[i]);
-        s += d * d;
-      }
-      return Math.sqrt(s);
-    }
+btnList.addEventListener('click', renderFaceList)
+btnClear.addEventListener('click', () => {
+  if (canvasCtx) canvasCtx.clearRect(0, 0, overlay.width, overlay.height)
+  log('Overlay limpo')
+})
 
-    // Registrar rosto
-    btnRegister.addEventListener('click', async () => {
-      try {
-        const userId = userIdInput.value.trim();
-        if(!userId) { alert('Informe user_id'); return; }
-        log('Gerando embedding para cadastro...');
-        const embedding = await gerarEmbedding();
-        if(!embedding) { alert('Nenhum rosto detectado'); return; }
-        await salvarRosto(userId, embedding);
-        log('Rosto salvo para', userId);
-      } catch (err){
-        log('Erro ao cadastrar:', err.message || err);
-        alert('Erro: ' + (err.message || err));
-      }
-    });
+// ====== STARTUP ======
+async function init() {
+  await loadModels()
+  await startCamera()
+  await renderFaceList()
+  renderSamples()
+  log('Pronto para uso')
+}
 
-    // Login por rosto (comparar)
-    btnLogin.addEventListener('click', async () => {
-      try {
-        const userId = userIdInput.value.trim();
-        const threshold = parseFloat(thresholdEl.value) || 0.6;
-        const mode = searchModeEl.value; // 'byUser' | 'all'
+init()
 
-        log('Gerando embedding para autenticar...');
-        const embedding = await gerarEmbedding();
-        if(!embedding) { alert('Nenhum rosto detectado'); return; }
-
-        let candidatos = [];
-        if(mode === 'byUser') {
-          if(!userId){ alert('Informe user_id para este modo'); return; }
-          candidatos = await buscarEmbeddings(userId);
-        } else {
-          candidatos = await buscarEmbeddings(null);
-        }
-
-        if(!candidatos || candidatos.length === 0){ alert('Nenhum rosto cadastrado para comparação'); return; }
-
-        // calcula menor distância
-        let best = { id: null, user_id: null, dist: Infinity };
-        for(const r of candidatos){
-          const dist = distanciaEuclidiana(embedding, r.embedding);
-          if(dist < best.dist){
-            best = { id: r.id, user_id: r.user_id, dist };
-          }
-        }
-
-        log('Melhor match:', best);
-        if(best.dist <= threshold){
-          alert('Autenticado como ' + best.user_id + ' (dist=' + best.dist.toFixed(4) + ')');
-        } else {
-          alert('Não autenticado (melhor dist=' + best.dist.toFixed(4) + ')');
-        }
-
-      } catch (err){
-        log('Erro autenticação:', err.message || err);
-        alert('Erro: ' + (err.message || err));
-      }
-    });
-
-    // Cleanup on unload
-    window.addEventListener('beforeunload', () => {
-      if(stream){
-        stream.getTracks().forEach(t => t.stop());
-      }
-    });
-
-  </script>
+</script>
 </body>
 </html>
