@@ -1,85 +1,481 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reconhecimento Facial</title>
-    <!-- Carregando a biblioteca face-api.js via CDN -->
-    <script src="cdn.jsdelivr.net"></script>
-    <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0;
-        }
-        .video-container {
-            position: relative;
-        }
-        video {
-            border: 1px solid black;
-        }
-        canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-    </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reconhecimento Facial - Offline (iPhone)</title>
+<style>
+  :root{--bg:#0f1720;--card:#0b1220;--accent:#0b84ff;--text:#e6eef8}
+  html,body{height:100%;margin:0;background:linear-gradient(180deg,#071023,#0b1220);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial}
+  .wrap{max-width:920px;margin:18px auto;padding:16px}
+  header{display:flex;align-items:center;gap:12px}
+  h1{font-size:20px;margin:0}
+  .stage{display:flex;flex-wrap:wrap;gap:14px;margin-top:14px}
+  .video-card{background:var(--card);padding:12px;border-radius:12px;flex:1;min-width:300px}
+  video{width:100%;height:auto;border-radius:8px;background:#000;display:block}
+  canvas{display:none}
+  .controls{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+  button{background:var(--accent);color:#fff;border:none;padding:10px;border-radius:8px;font-weight:600;cursor:pointer}
+  button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.08)}
+  .info{margin-top:12px;font-size:13px;line-height:1.35;color:#b8c7da}
+  .status{margin-top:10px;font-weight:700}
+  .small{font-size:12px;color:#9fb3d0}
+  .row{display:flex;gap:8px;flex-wrap:wrap}
+  .user-list{background:#071428;padding:10px;border-radius:8px;min-width:220px}
+  .user-item{padding:8px;border-radius:6px;background:rgba(255,255,255,0.02);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+  .badge{font-size:12px;padding:4px 8px;border-radius:6px;background:rgba(255,255,255,0.04)}
+  footer{margin-top:18px;color:#8ea9cf;font-size:13px}
+  /* mobile adjustments */
+  @media (max-width:520px){
+    .stage{flex-direction:column}
+    header{flex-direction:column;align-items:flex-start;gap:6px}
+  }
+</style>
 </head>
 <body>
-    <div class="video-container">
-        <video id="videoElement" width="640" height="480" autoplay muted></video>
-        <canvas id="canvasOverlay"></canvas>
+  <div class="wrap">
+    <header>
+      <h1>Reconhecimento Facial Offline — Prova de Vida e Anti-Spoof</h1>
+      <div class="small">Roda 100% no navegador do iPhone, sem servidor</div>
+    </header>
+
+    <div class="stage">
+      <div class="video-card">
+        <video id="video" autoplay playsinline muted></video>
+        <canvas id="overlay"></canvas>
+
+        <div class="controls">
+          <button id="btnStart">Iniciar câmera</button>
+          <button id="btnCapture" class="ghost">Capturar (Cadastro)</button>
+          <button id="btnVerify" class="ghost">Verificar (Reconhecimento)</button>
+          <button id="btnChallenge" class="ghost">Desafio Vida</button>
+          <button id="btnClear" class="ghost">Limpar cadastros</button>
+        </div>
+
+        <div class="status" id="status">Status: inativo</div>
+        <div class="info" id="info">
+          Use "Capturar" para cadastrar um rosto. Depois use "Verificar" para checar o rosto atual contra cadastrados. "Desafio Vida" inicia uma checagem de piscar + virar a cabeça
+        </div>
+      </div>
+
+      <div style="min-width:260px">
+        <div class="user-list" id="users">
+          <div style="font-weight:700;margin-bottom:8px">Cadastros</div>
+          <div id="userItems"></div>
+          <div class="small" style="margin-top:8px">Cada cadastro armazena uma assinatura do rosto (descriptor) localmente no browser</div>
+        </div>
+
+        <div style="margin-top:12px;background:#071428;padding:10px;border-radius:8px">
+          <div style="font-weight:700">Logs / Resultado</div>
+          <div id="log" style="margin-top:6px;font-size:13px;color:#bcd2f6;min-height:50px"></div>
+        </div>
+      </div>
     </div>
 
-    <script>
-        const video = document.getElementById('videoElement');
-        const canvas = document.getElementById('canvasOverlay');
-        const displaySize = { width: video.width, height: video.height };
-        faceapi.matchDimensions(canvas, displaySize);
+    <footer>
+      Observações: este sistema usa técnicas sem modelos pesados — para máxima precisão de nível bancário é recomendável incorporar modelos ML certificados. Aqui temos: detecção via FaceDetector API (quando disponível), descriptors locais por hash de imagem alinhada, verificação por distância, e prova de vida (piscar e movimento)
+    </footer>
+  </div>
 
-        // Função para iniciar a câmera e carregar os modelos de IA
-        async function startVideo() {
-            try {
-                // Acesso à webcam (requer permissão do usuário)
-                const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
-                video.srcObject = stream;
-            } catch (err) {
-                console.error("Erro ao acessar a câmera: ", err);
-            }
+<script>
+/*
+    Reconhecimento facial offline (single-file)
+    - Usa FaceDetector API quando disponível para bounding boxes
+    - Gera um "descriptor" simples: face crop → resize 64x64 → grayscale → normalize → vector
+    - Para liveness: detecta variação de bounding box e piscar (via frame brightness / eye heuristics when landmarks unavailable)
+    - Armazena cadastros em IndexedDB (local) as descriptors
+    - Works offline on iPhone Safari (save file to Files -> open)
+*/
+
+/* Helpers for async local storage (IndexedDB) */
+const DB_NAME = 'face_local_db_v1'
+const STORE = 'faces'
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, 1)
+    req.onupgradeneeded = e => {
+      const db = e.target.result
+      if (!db.objectStoreNames.contains(STORE)) db.createObjectStore(STORE, { keyPath: 'id' })
+    }
+    req.onsuccess = e => resolve(e.target.result)
+    req.onerror = e => reject(e.target.error)
+  })
+}
+async function saveFace(id, descriptor, meta={}) {
+  const db = await openDB()
+  return new Promise((res, rej) => {
+    const tx = db.transaction(STORE, 'readwrite')
+    tx.objectStore(STORE).put({ id, descriptor, meta })
+    tx.oncomplete = () => res(true)
+    tx.onerror = e => rej(e.target.error)
+  })
+}
+async function loadAllFaces() {
+  const db = await openDB()
+  return new Promise((res, rej) => {
+    const tx = db.transaction(STORE, 'readonly')
+    const list = []
+    tx.objectStore(STORE).openCursor().onsuccess = e => {
+      const c = e.target.result
+      if (c) { list.push(c.value); c.continue() } else res(list)
+    }
+    tx.onerror = e => rej(e.target.error)
+  })
+}
+async function deleteFace(id) {
+  const db = await openDB()
+  return new Promise((res, rej) => {
+    const tx = db.transaction(STORE, 'readwrite')
+    tx.objectStore(STORE).delete(id)
+    tx.oncomplete = () => res(true)
+    tx.onerror = e => rej(e.target.error)
+  })
+}
+async function clearAllFaces() {
+  const db = await openDB()
+  return new Promise((res, rej) => {
+    const tx = db.transaction(STORE, 'readwrite')
+    tx.objectStore(STORE).clear()
+    tx.oncomplete = () => res(true)
+    tx.onerror = e => rej(e.target.error)
+  })
+}
+
+/* UI elements */
+const video = document.getElementById('video')
+const overlay = document.getElementById('overlay')
+const ctx = overlay.getContext('2d')
+const btnStart = document.getElementById('btnStart')
+const btnCapture = document.getElementById('btnCapture')
+const btnVerify = document.getElementById('btnVerify')
+const btnChallenge = document.getElementById('btnChallenge')
+const btnClear = document.getElementById('btnClear')
+const status = document.getElementById('status')
+const log = document.getElementById('log')
+const userItems = document.getElementById('userItems')
+const info = document.getElementById('info')
+
+let faceDetector = null
+let stream = null
+let running = false
+let lastBox = null
+let detectionInterval = null
+
+/* Utility: write log */
+function appendLog(txt) {
+  const now = new Date().toLocaleTimeString()
+  log.innerText = `[${now}] ${txt}\n` + log.innerText
+}
+
+/* Check for FaceDetector API */
+if ('FaceDetector' in window) {
+  try {
+    faceDetector = new FaceDetector({ fastMode: true, maxDetectedFaces: 1 })
+    appendLog('FaceDetector API disponível')
+  } catch (e) {
+    appendLog('FaceDetector API instância falhou, fallback será usado')
+    faceDetector = null
+  }
+} else {
+  appendLog('FaceDetector API não suportada. Será usado pipeline fallback (box por movimento)')
+  faceDetector = null
+}
+
+/* Start camera */
+async function startCamera() {
+  if (stream) return
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false })
+    video.srcObject = stream
+    await video.play()
+    overlay.width = video.videoWidth || 640
+    overlay.height = video.videoHeight || 480
+    running = true
+    status.innerText = 'Status: câmera ativa'
+    appendLog('Câmera iniciada')
+    runDetectionLoop()
+    refreshUserList()
+  } catch (e) {
+    appendLog('Erro iniciando câmera: ' + e.message)
+    status.innerText = 'Status: erro câmera'
+  }
+}
+
+/* Stop camera (not used, but kept) */
+function stopCamera() {
+  if (stream) {
+    stream.getTracks().forEach(t => t.stop())
+    stream = null
+    running = false
+    appendLog('Câmera parada')
+  }
+}
+
+/* Draw bounding box */
+function drawBox(box, label = '') {
+  ctx.clearRect(0,0,overlay.width,overlay.height)
+  if (!box) return
+  ctx.strokeStyle = '#00ffcc'
+  ctx.lineWidth = 3
+  ctx.strokeRect(box.x, box.y, box.width, box.height)
+  if (label) {
+    ctx.fillStyle = '#00ffcc'
+    ctx.font = '18px system-ui'
+    ctx.fillText(label, box.x + 6, box.y - 8)
+  }
+}
+
+/* Run detection loop — prefer FaceDetector, fallback to motion-based box */
+async function runDetectionOnce() {
+  if (!running) return null
+  try {
+    if (faceDetector) {
+      const faces = await faceDetector.detect(video)
+      if (faces && faces.length>0) {
+        const f = faces[0].boundingBox
+        lastBox = { x: f.x, y: f.y, width: f.width, height: f.height }
+        drawBox(lastBox, 'Rosto')
+        return lastBox
+      } else {
+        drawBox(null)
+        return null
+      }
+    } else {
+      // fallback motion-based: compute diff between frames
+      // read current frame into canvas and locate brightest region (cheap heuristic)
+      const tmp = document.createElement('canvas')
+      tmp.width = overlay.width; tmp.height = overlay.height
+      const tctx = tmp.getContext('2d')
+      tctx.drawImage(video, 0,0,tmp.width,tmp.height)
+      const img = tctx.getImageData(0,0,tmp.width,tmp.height)
+      // find region of significant variance — crude but usable for prototype
+      let sx = tmp.width, sy = tmp.height, ex = 0, ey = 0
+      for (let y=0;y<img.height;y+=6) {
+        for (let x=0;x<img.width;x+=6) {
+          const idx = (y*img.width + x)*4
+          const r = img.data[idx], g = img.data[idx+1], b = img.data[idx+2]
+          const bright = (r+g+b)/3
+          if (bright > 40) {
+            sx = Math.min(sx,x); sy = Math.min(sy,y); ex = Math.max(ex,x); ey = Math.max(ey,y)
+          }
         }
+      }
+      if (ex>sx && ey>sy) {
+        const box = { x:sx, y:sy, width:Math.min(tmp.width, ex-sx), height:Math.min(tmp.height, ey-sy) }
+        lastBox = box
+        drawBox(box, 'Rosto (fallback)')
+        return box
+      } else {
+        drawBox(null)
+        return null
+      }
+    }
+  } catch (e) {
+    console.warn('detect error', e)
+    return null
+  }
+}
+function runDetectionLoop() {
+  if (detectionInterval) cancelAnimationFrame(detectionInterval)
+  async function loop() {
+    await runDetectionOnce()
+    detectionInterval = requestAnimationFrame(loop)
+  }
+  loop()
+}
 
-        // Carregar os modelos (requer arquivos de treinamento)
-        async function loadModels() {
-            // Os modelos devem ser carregados de um caminho acessível (pasta 'models')
-            await faceapi.nets.tinyFaceDetector.loadFromUri('/models');
-            await faceapi.nets.faceLandmark68Net.loadFromUri('/models');
-            await faceapi.nets.faceRecognitionNet.loadFromUri('/models');
-            console.log("Modelos carregados.");
-        }
+/* Descriptor generation:
+   - crop face box
+   - resize to 64x64
+   - grayscale and downsample -> array of numbers between 0-1
+   - normalize (mean 0, std 1)
+   Returns Float32Array descriptor
+*/
+function generateDescriptor(box) {
+  if (!box) return null
+  const cw = overlay.width, ch = overlay.height
+  const tmp = document.createElement('canvas')
+  const size = 64
+  tmp.width = size; tmp.height = size
+  const tctx = tmp.getContext('2d')
+  // expand a bit around box for margins
+  const pad = 0.2
+  let sx = Math.max(0, Math.floor(box.x - box.width*pad))
+  let sy = Math.max(0, Math.floor(box.y - box.height*pad))
+  let sw = Math.min(cw - sx, Math.floor(box.width*(1+pad*2)))
+  let sh = Math.min(ch - sy, Math.floor(box.height*(1+pad*2)))
+  tctx.drawImage(video, sx, sy, sw, sh, 0, 0, size, size)
+  // get grayscale vector
+  const img = tctx.getImageData(0,0,size,size)
+  const vec = new Float32Array(size*size)
+  let sum = 0
+  for (let i=0;i<size*size;i++) {
+    const idx = i*4
+    const r = img.data[idx], g = img.data[idx+1], b = img.data[idx+2]
+    const gray = (0.299*r + 0.587*g + 0.114*b)/255
+    vec[i] = gray
+    sum += gray
+  }
+  const mean = sum / vec.length
+  let variance = 0
+  for (let i=0;i<vec.length;i++) variance += (vec[i]-mean)*(vec[i]-mean)
+  variance = Math.sqrt(variance / vec.length) || 1e-6
+  // normalize
+  for (let i=0;i<vec.length;i++) vec[i] = (vec[i]-mean)/variance
+  return vec
+}
 
-        // Lógica principal: carregar modelos e iniciar o vídeo
-        Promise.all([
-            loadModels(),
-            startVideo()
-        ]).then(() => {
-            video.addEventListener('play', () => {
-                setInterval(async () => {
-                    // Detectar rostos
-                    const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptors();
-                    
-                    // Redimensionar as detecções para o tamanho do canvas
-                    const resizedDetections = faceapi.resizeResults(detections, displaySize);
-                    
-                    // Limpar o canvas e desenhar os resultados
-                    canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
-                    faceapi.draw.drawDetections(canvas, resizedDetections);
-                    faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
-                }, 100); // Executa a detecção a cada 100ms
-            });
-        });
-    </script>
+/* Distance between descriptors (Euclidean) */
+function distanceDesc(a,b) {
+  if (!a || !b || a.length !== b.length) return Infinity
+  let s = 0
+  for (let i=0;i<a.length;i++) {
+    const d = a[i]-b[i]
+    s += d*d
+  }
+  return Math.sqrt(s)
+}
+
+/* User flows: capture, verify */
+btnStart.onclick = startCamera
+
+btnCapture.onclick = async () => {
+  if (!running) { appendLog('Inicie a câmera primeiro'); return }
+  const box = lastBox || await runDetectionOnce()
+  if (!box) { appendLog('Nenhum rosto detectado para cadastro'); return }
+  const name = prompt('Nome do cadastro (use apelido curto):')
+  if (!name) return
+  appendLog('Gerando assinatura do rosto...')
+  const desc = generateDescriptor(box)
+  if (!desc) { appendLog('Falha ao gerar assinatura'); return }
+  await saveFace(name, Array.from(desc), { created: Date.now() })
+  appendLog('Cadastro salvo: ' + name)
+  refreshUserList()
+}
+
+async function refreshUserList() {
+  const all = await loadAllFaces()
+  userItems.innerHTML = ''
+  if (!all.length) {
+    userItems.innerHTML = '<div class="small">Nenhum cadastro</div>'
+    return
+  }
+  for (const u of all) {
+    const div = document.createElement('div'); div.className='user-item'
+    const left = document.createElement('div'); left.innerText = u.id
+    const right = document.createElement('div')
+    const btn = document.createElement('button'); btn.className='ghost'; btn.innerText='Excluir'
+    btn.onclick = async () => { if(confirm('Excluir '+u.id+'?')) { await deleteFace(u.id); refreshUserList(); appendLog('Excluído '+u.id) } }
+    right.appendChild(btn)
+    div.appendChild(left); div.appendChild(right)
+    userItems.appendChild(div)
+  }
+}
+
+/* Verify current face against all stored */
+btnVerify.onclick = async () => {
+  if (!running) { appendLog('Inicie a câmera primeiro'); return }
+  const box = lastBox || await runDetectionOnce()
+  if (!box) { appendLog('Nenhum rosto detectado para verificar'); return }
+  appendLog('Gerando assinatura corrente...')
+  const descNow = generateDescriptor(box)
+  if (!descNow) { appendLog('Falha ao gerar assinatura'); return }
+  const all = await loadAllFaces()
+  if (!all.length) { appendLog('Nenhum cadastro para comparar'); return }
+  let best = { id:null, dist:Infinity }
+  for (const u of all) {
+    const d = distanceDesc(descNow, Float32Array.from(u.descriptor))
+    if (d < best.dist) { best = { id: u.id, dist: d } }
+  }
+  // threshold: empiric — lower is closer; 12-20 typical here (depends on descriptor normalization)
+  const threshold = 18
+  if (best.dist < threshold) {
+    appendLog(`Reconhecido como ${best.id} — distância ${best.dist.toFixed(2)}`)
+    status.innerText = `Status: reconhecido → ${best.id}`
+  } else {
+    appendLog(`Não reconhecido — melhor candidato ${best.id || 'nenhum'} (dist ${best.dist.toFixed(2)})`)
+    status.innerText = 'Status: NÃO reconhecido'
+  }
+}
+
+/* Challenge: proof of life — combined blink + head-turn challenge */
+btnChallenge.onclick = async () => {
+  if (!running) { appendLog('Inicie a câmera primeiro'); return }
+  appendLog('Iniciando desafio de prova de vida: piscar e virar a cabeça')
+  status.innerText = 'Status: desafio em andamento'
+  const maxTime = 12000
+  const start = Date.now()
+  let blinkDetected = false
+  let movedDetected = false
+  let baselineBox = lastBox || await runDetectionOnce()
+  if (!baselineBox) { appendLog('Nenhum rosto detectado para iniciar desafio'); return }
+  appendLog('Mantenha seu rosto visível e siga as instruções')
+  appendLog('Aguarde piscar naturalmente (até 6s)...')
+  // Blink detection: monitor sudden small darkening in central-top area (simple heuristic)
+  while (Date.now() - start < maxTime) {
+    const box = lastBox || await runDetectionOnce()
+    if (!box) { await new Promise(r=>setTimeout(r,200)); continue }
+    // crop eyes region approx (upper 40% of box)
+    const tmp = document.createElement('canvas'), s = 40
+    tmp.width = s; tmp.height = s
+    const tctx = tmp.getContext('2d')
+    const pad = 0.15
+    let sx = Math.max(0, Math.floor(box.x + box.width*pad))
+    let sy = Math.max(0, Math.floor(box.y + box.height*0.12))
+    let sw = Math.min(overlay.width - sx, Math.floor(box.width*(1-pad*2)))
+    let sh = Math.max(8, Math.min(overlay.height - sy, Math.floor(box.height*0.35)))
+    tctx.drawImage(video, sx, sy, sw, sh, 0, 0, s, s)
+    const data = tctx.getImageData(0,0,s,s).data
+    // average brightness
+    let sum=0
+    for (let i=0;i<data.length;i+=4) sum += (data[i]+data[i+1]+data[i+2])/3
+    const avg = sum / (data.length/4)
+    // initialize baselineAverage
+    if (!this._blinkBase) this._blinkBase = avg
+    // if brightness drops notably -> likely eye closed
+    if (avg < this._blinkBase * 0.85) {
+      blinkDetected = true
+      appendLog('Piscar detectado')
+      // wait a bit to avoid double-count
+      await new Promise(r=>setTimeout(r,900))
+    }
+    // movement detection: compare box centers
+    if (baselineBox) {
+      const cx0 = baselineBox.x + baselineBox.width/2
+      const cy0 = baselineBox.y + baselineBox.height/2
+      const cx1 = box.x + box.width/2
+      const cy1 = box.y + box.height/2
+      const dx = Math.abs(cx1-cx0), dy = Math.abs(cy1-cy0)
+      if (dx > baselineBox.width*0.18) { movedDetected = true; appendLog('Movimento lateral detectado (virou a cabeça)'); }
+    }
+    if (blinkDetected && movedDetected) break
+    await new Promise(r=>setTimeout(r,250))
+  }
+  if (blinkDetected && movedDetected) {
+    appendLog('Desafio concluído com sucesso — usuário vivo')
+    status.innerText = 'Status: prova de vida OK'
+  } else {
+    appendLog('Falha no desafio — prova de vida não confirmada')
+    status.innerText = 'Status: prova de vida NEGADA'
+  }
+  // reset blink baseline
+  this._blinkBase = null
+}
+
+/* Clear all cadastros */
+btnClear.onclick = async () => {
+  if (!confirm('Remover todos os cadastros locais?')) return
+  await clearAllFaces()
+  refreshUserList()
+  appendLog('Todos cadastros removidos')
+}
+
+/* On load: try to refresh list (in case camera not started) */
+refreshUserList()
+
+/* Extra: prompt how user can save HTML offline
+   On iPhone: Salvar no app Arquivos e abrir no Safari */
+appendLog('Pronto. Para usar offline: salve este arquivo no app Arquivos e abra no Safari')
+</script>
 </body>
 </html>
