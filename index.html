@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reconhecimento Facial</title>
+    <!-- Carregando a biblioteca face-api.js via CDN -->
+    <script src="cdn.jsdelivr.net"></script>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .video-container {
+            position: relative;
+        }
+        video {
+            border: 1px solid black;
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="video-container">
+        <video id="videoElement" width="640" height="480" autoplay muted></video>
+        <canvas id="canvasOverlay"></canvas>
+    </div>
+
+    <script>
+        const video = document.getElementById('videoElement');
+        const canvas = document.getElementById('canvasOverlay');
+        const displaySize = { width: video.width, height: video.height };
+        faceapi.matchDimensions(canvas, displaySize);
+
+        // Função para iniciar a câmera e carregar os modelos de IA
+        async function startVideo() {
+            try {
+                // Acesso à webcam (requer permissão do usuário)
+                const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
+                video.srcObject = stream;
+            } catch (err) {
+                console.error("Erro ao acessar a câmera: ", err);
+            }
+        }
+
+        // Carregar os modelos (requer arquivos de treinamento)
+        async function loadModels() {
+            // Os modelos devem ser carregados de um caminho acessível (pasta 'models')
+            await faceapi.nets.tinyFaceDetector.loadFromUri('/models');
+            await faceapi.nets.faceLandmark68Net.loadFromUri('/models');
+            await faceapi.nets.faceRecognitionNet.loadFromUri('/models');
+            console.log("Modelos carregados.");
+        }
+
+        // Lógica principal: carregar modelos e iniciar o vídeo
+        Promise.all([
+            loadModels(),
+            startVideo()
+        ]).then(() => {
+            video.addEventListener('play', () => {
+                setInterval(async () => {
+                    // Detectar rostos
+                    const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptors();
+                    
+                    // Redimensionar as detecções para o tamanho do canvas
+                    const resizedDetections = faceapi.resizeResults(detections, displaySize);
+                    
+                    // Limpar o canvas e desenhar os resultados
+                    canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+                    faceapi.draw.drawDetections(canvas, resizedDetections);
+                    faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
+                }, 100); // Executa a detecção a cada 100ms
+            });
+        });
+    </script>
+</body>
+</html>
