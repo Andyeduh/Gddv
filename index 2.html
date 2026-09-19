@@ -1,0 +1,3246 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<meta
+    name="theme-color"
+    content="#f5f1e9"
+>
+
+<title>
+    Fortaleza ’26 — Roteiro de Viagem
+</title>
+
+
+<link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+>
+
+<link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+>
+
+<link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap"
+    rel="stylesheet"
+>
+
+
+<style>
+
+/* =====================================================
+   RESET
+===================================================== */
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+
+:root{
+
+    --bg:#f5f1e9;
+
+    --paper:#fbf9f5;
+
+    --white:#fffdf9;
+
+    --ink:#202522;
+
+    --muted:#77756d;
+
+    --line:#ded9ce;
+
+    --accent:#a96d45;
+
+    --soft:#eee6da;
+
+    --green:#71877d;
+
+}
+
+
+/* =====================================================
+   BODY
+===================================================== */
+
+html{
+    scroll-behavior:smooth;
+}
+
+
+body{
+
+    font-family:
+        "DM Sans",
+        sans-serif;
+
+    background:var(--bg);
+
+    color:var(--ink);
+
+    line-height:1.6;
+
+    overflow-x:hidden;
+}
+
+
+/* =====================================================
+   SELECTION
+===================================================== */
+
+::selection{
+
+    background:var(--accent);
+
+    color:white;
+}
+
+
+/* =====================================================
+   HERO
+===================================================== */
+
+.hero{
+
+    min-height:92vh;
+
+    position:relative;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:space-between;
+
+    overflow:hidden;
+
+    background:
+
+        linear-gradient(
+            180deg,
+            rgba(15,24,22,.12),
+            rgba(15,24,22,.7)
+        ),
+
+        radial-gradient(
+            circle at 75% 30%,
+            #d6bea0 0 10%,
+            transparent 35%
+        ),
+
+        linear-gradient(
+            135deg,
+            #71877d,
+            #d9c8aa 52%,
+            #4f625d
+        );
+}
+
+
+/* CURVA INFERIOR */
+
+.hero::after{
+
+    content:"";
+
+    position:absolute;
+
+    left:-10%;
+
+    right:-10%;
+
+    bottom:-27%;
+
+    height:44%;
+
+    background:var(--bg);
+
+    border-radius:
+        50% 50% 0 0 /
+        25% 25% 0 0;
+
+}
+
+
+/* TEXTURA */
+
+.hero::before{
+
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    opacity:.12;
+
+    background-image:
+        radial-gradient(
+            rgba(255,255,255,.7) 1px,
+            transparent 1px
+        );
+
+    background-size:5px 5px;
+
+    pointer-events:none;
+}
+
+
+.hero-overlay{
+
+    position:absolute;
+
+    inset:0;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(0,0,0,.2),
+            transparent 70%
+        );
+}
+
+
+/* =====================================================
+   NAV
+===================================================== */
+
+.nav{
+
+    position:relative;
+
+    z-index:10;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:
+        28px 6vw;
+
+    color:white;
+
+    text-transform:uppercase;
+
+    letter-spacing:.12em;
+
+    font-size:11px;
+}
+
+
+.brand{
+
+    font-weight:700;
+
+    letter-spacing:.15em;
+}
+
+
+.brand span{
+
+    opacity:.55;
+}
+
+
+.nav-links{
+
+    display:flex;
+
+    gap:24px;
+
+    align-items:center;
+}
+
+
+.nav a{
+
+    color:white;
+
+    text-decoration:none;
+
+    border-bottom:
+        1px solid
+        rgba(255,255,255,.6);
+
+    padding-bottom:4px;
+
+    transition:.25s;
+}
+
+
+.nav a:hover{
+
+    opacity:.65;
+}
+
+
+/* =====================================================
+   HERO CONTENT
+===================================================== */
+
+.hero-content{
+
+    position:relative;
+
+    z-index:5;
+
+    color:white;
+
+    margin:
+        0
+        8vw
+        13vh;
+
+    max-width:700px;
+}
+
+
+.eyebrow{
+
+    font-size:10px;
+
+    letter-spacing:.23em;
+
+    text-transform:uppercase;
+
+    font-weight:700;
+
+    color:var(--accent);
+
+    margin-bottom:12px;
+}
+
+
+.hero .eyebrow{
+
+    color:#f5eadb;
+}
+
+
+h1{
+
+    font-family:
+        "Playfair Display",
+        serif;
+
+    font-weight:600;
+
+    font-size:
+        clamp(
+            70px,
+            13vw,
+            150px
+        );
+
+    line-height:.84;
+
+    letter-spacing:-.06em;
+}
+
+
+.hero-subtitle{
+
+    font-size:
+        clamp(
+            15px,
+            2vw,
+            22px
+        );
+
+    margin:
+        24px
+        0
+        30px;
+
+    letter-spacing:.08em;
+}
+
+
+.scroll-btn{
+
+    display:inline-block;
+
+    color:var(--ink);
+
+    background:var(--white);
+
+    text-decoration:none;
+
+    padding:
+        13px
+        20px;
+
+    border-radius:40px;
+
+    font-size:11px;
+
+    font-weight:700;
+
+    transition:
+        transform .25s,
+        box-shadow .25s;
+}
+
+
+.scroll-btn:hover{
+
+    transform:translateY(-4px);
+
+    box-shadow:
+        0 10px 25px
+        rgba(0,0,0,.15);
+}
+
+
+/* =====================================================
+   HERO STAMP
+===================================================== */
+
+.hero-stamp{
+
+    position:absolute;
+
+    z-index:5;
+
+    right:8vw;
+
+    bottom:18vh;
+
+    color:white;
+
+    text-align:center;
+
+    font-size:40px;
+
+    line-height:1;
+}
+
+
+.hero-stamp small{
+
+    font-size:8px;
+
+    letter-spacing:.25em;
+}
+
+
+/* =====================================================
+   MAIN
+===================================================== */
+
+main{
+
+    max-width:1180px;
+
+    margin:auto;
+
+    padding:
+        70px 24px 20px;
+}
+
+
+/* =====================================================
+   INTRO
+===================================================== */
+
+.intro{
+
+    display:grid;
+
+    grid-template-columns:
+        1.2fr
+        .8fr;
+
+    gap:70px;
+
+    align-items:end;
+
+    padding:
+        20px 4% 75px;
+}
+
+
+h2{
+
+    font-family:
+        "Playfair Display",
+        serif;
+
+    font-weight:600;
+
+    font-size:
+        clamp(
+            38px,
+            5vw,
+            62px
+        );
+
+    line-height:1.02;
+
+    letter-spacing:-.04em;
+}
+
+
+h2 em{
+
+    color:var(--accent);
+
+    font-weight:500;
+}
+
+
+.intro-text{
+
+    color:var(--muted);
+
+    max-width:390px;
+
+    font-size:14px;
+}
+
+
+/* =====================================================
+   GRID DOS DIAS
+===================================================== */
+
+.trip-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(2,1fr);
+
+    gap:22px;
+}
+
+
+/* =====================================================
+   CARD
+===================================================== */
+
+.day-card{
+
+    background:var(--paper);
+
+    border:
+        1px solid
+        var(--line);
+
+    padding:32px;
+
+    border-radius:5px;
+
+    position:relative;
+
+    overflow:hidden;
+
+    transition:
+        transform .35s ease,
+        box-shadow .35s ease;
+}
+
+
+.day-card:hover{
+
+    transform:
+        translateY(-5px);
+
+    box-shadow:
+        0 18px 40px
+        rgba(55,47,35,.08);
+}
+
+
+.day-card.featured,
+.day-card.final-day{
+
+    grid-column:span 2;
+}
+
+
+/* =====================================================
+   CARD ESPECIAL
+===================================================== */
+
+.day-card.highlight{
+
+    background:#e8eee8;
+}
+
+
+/* =====================================================
+   MADRUGADA
+===================================================== */
+
+.day-card.midnight{
+
+    background:#252b28;
+
+    color:#f5f2eb;
+
+    border-color:#252b28;
+}
+
+
+.day-card.midnight
+.description,
+
+.day-card.midnight
+.date span{
+
+    color:#b9bdb7;
+}
+
+
+.day-card.midnight
+.timeline{
+
+    border-top-color:#454c48;
+}
+
+
+/* =====================================================
+   DATA
+===================================================== */
+
+.date{
+
+    font-family:
+        "Playfair Display",
+        serif;
+
+    font-weight:600;
+
+    font-size:40px;
+
+    line-height:1;
+
+    display:flex;
+
+    gap:9px;
+
+    align-items:baseline;
+}
+
+
+.date span{
+
+    font-family:
+        "DM Sans",
+        sans-serif;
+
+    font-size:10px;
+
+    font-weight:700;
+
+    letter-spacing:.18em;
+
+    color:var(--muted);
+}
+
+
+/* =====================================================
+   TÍTULO DO DIA
+===================================================== */
+
+.day-head{
+
+    display:flex;
+
+    gap:14px;
+
+    align-items:center;
+
+    margin:
+        26px 0 8px;
+}
+
+
+.day-number{
+
+    font-size:10px;
+
+    color:var(--accent);
+
+    font-weight:700;
+
+    letter-spacing:.12em;
+}
+
+
+.day-head h3{
+
+    font-family:
+        "Playfair Display",
+        serif;
+
+    font-weight:600;
+
+    font-size:25px;
+}
+
+
+.description{
+
+    color:var(--muted);
+
+    font-size:14px;
+
+    max-width:620px;
+
+    margin-bottom:22px;
+}
+
+
+/* =====================================================
+   CHECKLIST
+===================================================== */
+
+.timeline{
+
+    border-top:
+        1px solid
+        var(--line);
+
+    padding-top:8px;
+
+    display:grid;
+
+    grid-template-columns:
+        1fr 1fr;
+}
+
+
+.timeline label{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    padding:10px 0;
+
+    font-size:13px;
+
+    cursor:pointer;
+
+    transition:.2s;
+}
+
+
+.timeline label:hover{
+
+    transform:translateX(3px);
+}
+
+
+.timeline input{
+
+    appearance:none;
+
+    width:16px;
+
+    height:16px;
+
+    border:
+        1px solid
+        #b8b1a4;
+
+    border-radius:50%;
+
+    background:transparent;
+
+    position:relative;
+
+    flex:0 0 16px;
+
+    cursor:pointer;
+}
+
+
+.timeline input:checked{
+
+    background:var(--accent);
+
+    border-color:var(--accent);
+}
+
+
+.timeline input:checked::after{
+
+    content:"✓";
+
+    position:absolute;
+
+    color:white;
+
+    font-size:10px;
+
+    left:3px;
+
+    top:-1px;
+}
+
+
+.timeline label:has(
+    input:checked
+) span{
+
+    text-decoration:line-through;
+
+    opacity:.45;
+}
+
+
+/* =====================================================
+   PILLS
+===================================================== */
+
+.time-pill{
+
+    display:inline-block;
+
+    border:
+        1px solid
+        #686f6a;
+
+    border-radius:20px;
+
+    padding:
+        6px 12px;
+
+    font-size:11px;
+
+    letter-spacing:.08em;
+
+    margin-bottom:15px;
+}
+
+
+/* =====================================================
+   NOTE
+===================================================== */
+
+.note{
+
+    margin-top:18px;
+
+    padding:
+        12px 14px;
+
+    background:
+        rgba(
+            169,
+            109,
+            69,
+            .08
+        );
+
+    font-size:11px;
+
+    color:var(--muted);
+
+    border-left:
+        2px solid
+        var(--accent);
+}
+
+
+/* =====================================================
+   SEÇÃO ENDEREÇOS
+===================================================== */
+
+.addresses{
+
+    padding:
+        100px 4% 50px;
+}
+
+
+.addresses-header{
+
+    display:grid;
+
+    grid-template-columns:
+        1fr
+        .7fr;
+
+    gap:60px;
+
+    align-items:end;
+
+    margin-bottom:40px;
+}
+
+
+.addresses-header > p{
+
+    color:var(--muted);
+
+    font-size:14px;
+
+    max-width:330px;
+}
+
+
+.address-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(2,1fr);
+
+    gap:14px;
+}
+
+
+/* =====================================================
+   CARD DE ENDEREÇO
+===================================================== */
+
+.address-card{
+
+    background:var(--paper);
+
+    border:
+        1px solid
+        var(--line);
+
+    padding:24px;
+
+    display:flex;
+
+    gap:18px;
+
+    align-items:flex-start;
+
+    transition:
+        transform .3s ease,
+        box-shadow .3s ease;
+}
+
+
+.address-card:hover{
+
+    transform:
+        translateY(-4px);
+
+    box-shadow:
+        0 15px 35px
+        rgba(55,47,35,.08);
+}
+
+
+.address-icon{
+
+    width:46px;
+
+    height:46px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    background:var(--soft);
+
+    border-radius:50%;
+
+    font-size:21px;
+
+    flex-shrink:0;
+}
+
+
+.address-type{
+
+    font-size:9px;
+
+    font-weight:700;
+
+    letter-spacing:.2em;
+
+    color:var(--accent);
+}
+
+
+.address-card h3{
+
+    font-family:
+        "Playfair Display",
+        serif;
+
+    font-size:21px;
+
+    margin:
+        3px 0 5px;
+}
+
+
+.address-card p{
+
+    color:var(--muted);
+
+    font-size:12px;
+
+    line-height:1.5;
+
+    margin-bottom:11px;
+}
+
+
+.address-card a{
+
+    display:inline-block;
+
+    color:var(--ink);
+
+    font-size:11px;
+
+    font-weight:700;
+
+    text-decoration:none;
+
+    border-bottom:
+        1px solid
+        var(--ink);
+
+    padding-bottom:2px;
+
+    transition:.2s;
+}
+
+
+.address-card a:hover{
+
+    color:var(--accent);
+
+    border-color:var(--accent);
+}
+
+
+/* =====================================================
+   ENDEREÇO ESPECIAL
+===================================================== */
+
+.special-address{
+
+    background:#252b28;
+
+    color:#f5f2eb;
+
+    border-color:#252b28;
+}
+
+
+.special-address
+.address-icon{
+
+    background:#3b433e;
+}
+
+
+.special-address
+.address-type{
+
+    color:#d6a27d;
+}
+
+
+.special-address p{
+
+    color:#b9bdb7;
+}
+
+
+.special-address a{
+
+    color:#f5f2eb;
+
+    border-color:#f5f2eb;
+}
+
+
+/* =====================================================
+   MAPA
+===================================================== */
+
+.map-section{
+
+    margin:
+        30px 4% 80px;
+
+    padding:
+        32px;
+
+    background:#e8eee8;
+
+    border:
+        1px solid
+        var(--line);
+}
+
+
+.map-section h3{
+
+    font-family:
+        "Playfair Display",
+        serif;
+
+    font-size:28px;
+
+    margin-bottom:8px;
+}
+
+
+.map-section p{
+
+    color:var(--muted);
+
+    font-size:13px;
+
+    margin-bottom:20px;
+}
+
+
+.map-button{
+
+    display:inline-block;
+
+    background:var(--ink);
+
+    color:white;
+
+    text-decoration:none;
+
+    padding:
+        12px 18px;
+
+    border-radius:30px;
+
+    font-size:11px;
+
+    font-weight:700;
+
+    transition:.25s;
+}
+
+
+.map-button:hover{
+
+    transform:
+        translateY(-3px);
+
+    opacity:.9;
+}
+
+
+/* =====================================================
+   PROGRESSO
+===================================================== */
+
+.progress-section{
+
+    margin:
+        70px 4% 50px;
+
+    padding:34px;
+
+    background:var(--white);
+
+    border:
+        1px solid
+        var(--line);
+}
+
+
+.progress-top{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:end;
+
+    gap:20px;
+}
+
+
+.progress-top h2{
+
+    font-size:34px;
+}
+
+
+.progress-top strong{
+
+    font-family:
+        "Playfair Display",
+        serif;
+
+    font-weight:600;
+
+    font-size:34px;
+
+    color:var(--accent);
+}
+
+
+.progress-bar{
+
+    height:7px;
+
+    background:#e6e0d5;
+
+    margin:
+        25px 0 12px;
+
+    border-radius:20px;
+
+    overflow:hidden;
+}
+
+
+.progress-bar span{
+
+    display:block;
+
+    height:100%;
+
+    width:0;
+
+    background:var(--accent);
+
+    transition:
+        width .5s ease;
+}
+
+
+#progressLabel{
+
+    font-size:12px;
+
+    color:var(--muted);
+}
+
+
+/* =====================================================
+   FOOTER
+===================================================== */
+
+footer{
+
+    text-align:center;
+
+    padding:
+        55px 20px 70px;
+
+    color:var(--muted);
+
+    font-size:11px;
+
+    letter-spacing:.18em;
+}
+
+
+footer p{
+
+    font-weight:700;
+
+    color:var(--ink);
+
+    margin-bottom:5px;
+}
+
+
+/* =====================================================
+   ANIMAÇÃO
+===================================================== */
+
+.reveal{
+
+    opacity:0;
+
+    transform:
+        translateY(25px);
+
+    transition:
+        opacity .8s ease,
+        transform .8s ease;
+}
+
+
+.reveal.visible{
+
+    opacity:1;
+
+    transform:none;
+}
+
+
+/* =====================================================
+   RESPONSIVO
+===================================================== */
+
+@media(max-width:760px){
+
+    .hero{
+
+        min-height:86vh;
+    }
+
+
+    .nav{
+
+        padding:
+            23px 22px;
+    }
+
+
+    .nav-links{
+
+        gap:14px;
+    }
+
+
+    .nav-links a{
+
+        font-size:9px;
+    }
+
+
+    .hero-content{
+
+        margin:
+            0 24px 14vh;
+    }
+
+
+    .hero-stamp{
+
+        right:24px;
+
+        bottom:20vh;
+    }
+
+
+    main{
+
+        padding:
+            45px 15px;
+    }
+
+
+    .intro{
+
+        display:block;
+
+        padding:
+            15px 10px 55px;
+    }
+
+
+    .intro-text{
+
+        margin-top:25px;
+    }
+
+
+    .trip-grid{
+
+        grid-template-columns:1fr;
+
+        gap:14px;
+    }
+
+
+    .day-card.featured,
+    .day-card.final-day{
+
+        grid-column:span 1;
+    }
+
+
+    .day-card{
+
+        padding:24px;
+    }
+
+
+    .timeline{
+
+        grid-template-columns:1fr;
+    }
+
+
+    .day-head h3{
+
+        font-size:22px;
+    }
+
+
+    .addresses{
+
+        padding:
+            60px 10px 30px;
+    }
+
+
+    .addresses-header{
+
+        display:block;
+
+        margin-bottom:30px;
+    }
+
+
+    .addresses-header > p{
+
+        margin-top:20px;
+    }
+
+
+    .address-grid{
+
+        grid-template-columns:1fr;
+    }
+
+
+    .map-section{
+
+        margin:
+            30px 10px 60px;
+
+        padding:25px;
+    }
+
+
+    .progress-section{
+
+        margin:
+            60px 10px 35px;
+
+        padding:25px;
+    }
+
+
+    .progress-top h2{
+
+        font-size:28px;
+    }
+
+}
+
+
+/* =====================================================
+   REDUÇÃO DE MOVIMENTO
+===================================================== */
+
+@media(
+    prefers-reduced-motion:reduce
+){
+
+    html{
+
+        scroll-behavior:auto;
+    }
+
+    *{
+
+        transition:none !important;
+
+        animation:none !important;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+
+<body>
+
+
+<!-- =====================================================
+     HERO
+===================================================== -->
+
+<header class="hero">
+
+    <div class="hero-overlay"></div>
+
+
+    <nav class="nav">
+
+        <div class="brand">
+
+            FORTALEZA
+            <span>’26</span>
+
+        </div>
+
+
+        <div class="nav-links">
+
+            <a href="#roteiro">
+                Roteiro
+            </a>
+
+            <a href="#enderecos">
+                Endereços
+            </a>
+
+        </div>
+
+    </nav>
+
+
+
+    <div class="hero-content reveal">
+
+        <p class="eyebrow">
+
+            24 AGO — 01 SET
+
+        </p>
+
+
+        <h1>
+
+            Fortaleza
+
+        </h1>
+
+
+        <p class="hero-subtitle">
+
+            sol, mar, compras & memórias
+
+        </p>
+
+
+        <a
+            href="#roteiro"
+            class="scroll-btn"
+        >
+
+            Explorar roteiro ↓
+
+        </a>
+
+    </div>
+
+
+
+    <div class="hero-stamp">
+
+        🌴
+
+        <br>
+
+        <small>
+            CEARÁ
+        </small>
+
+    </div>
+
+</header>
+
+
+
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
+<main id="roteiro">
+
+
+<!-- =====================================================
+     INTRO
+===================================================== -->
+
+<section class="intro reveal">
+
+    <div>
+
+        <p class="eyebrow">
+            TRAVEL DIARY
+        </p>
+
+
+        <h2>
+
+            Um roteiro para viver
+
+            <br>
+
+            <em>
+                Fortaleza.
+            </em>
+
+        </h2>
+
+    </div>
+
+
+    <p class="intro-text">
+
+        Uma viagem entre praias,
+        mercados, cultura, compras
+        e aquele descanso merecido.
+
+        <br><br>
+
+        Marque cada momento vivido
+        e acompanhe o progresso
+        da viagem.
+
+    </p>
+
+</section>
+
+
+
+<!-- =====================================================
+     ROTEIRO
+===================================================== -->
+
+<section class="trip-grid">
+
+
+<!-- ================= DIA 24 ================= -->
+
+<article
+    class="day-card featured reveal"
+>
+
+    <div class="date">
+
+        24
+
+        <span>
+            AGO
+        </span>
+
+    </div>
+
+
+    <div class="day-head">
+
+        <span class="day-number">
+            01
+        </span>
+
+        <h3>
+            Chegada ✈️
+        </h3>
+
+    </div>
+
+
+    <p class="description">
+
+        O primeiro contato com Fortaleza:
+        check-in, malas, mar e uma noite
+        tranquila.
+
+    </p>
+
+
+    <div class="timeline">
+
+        <label>
+            <input type="checkbox">
+            <span>
+                ✈️ Chegada em Fortaleza
+            </span>
+        </label>
+
+
+        <label>
+            <input type="checkbox">
+            <span>
+                🏨 Check-in
+            </span>
+        </label>
+
+
+        <label>
+            <input type="checkbox">
+            <span>
+                🧳 Organizar as malas
+            </span>
+        </label>
+
+
+        <label>
+            <input type="checkbox">
+            <span>
+                🌊 Praia de Meireles / Beira-Mar
+            </span>
+        </label>
+
+
+        <label>
+            <input type="checkbox">
+            <span>
+                🌅 Passeio pela orla
+            </span>
+        </label>
+
+
+        <label>
+            <input type="checkbox">
+            <span>
+                🍽️ Jantar
+            </span>
+        </label>
+
+
+        <label>
+            <input type="checkbox">
+            <span>
+                😴 Descanso
+            </span>
+        </label>
+
+    </div>
+
+</article>
+
+
+
+<!-- ================= DIA 25 ================= -->
+
+<article
+    class="day-card midnight reveal"
+>
+
+    <div class="date">
+
+        25
+
+        <span>
+            AGO → 26
+        </span>
+
+    </div>
+
+
+    <div class="day-head">
+
+        <span class="day-number">
+            02
+        </span>
+
+        <h3>
+            Feira da Madrugada 🛍️🌙
+        </h3>
+
+    </div>
+
+
+    <p class="description">
+
+        Uma madrugada de compras,
+        descobertas e muita energia.
+
+    </p>
+
+
+    <div class="time-pill">
+
+        03:00 — saída
+
+    </div>
+
+
+    <div class="timeline">
+
+        <label>
+            <input type="checkbox">
+            <span>
+                03:00 — 🚗 Saída
+            </span>
+        </label>
+
+
+        <label>
+            <input type="checkbox">
+            <span>
+                03:30/04:00 — 🛍️ Feira da Madrugada
+            </span>
+        </label>
+
+
+        <label>
+            <input type="checkbox">
+            <span>
+                ☀️ Compras durante a madrugada/manhã
+            </span>
+        </label>
+
+
+        <label>
+            <input type="checkbox">
+            <span>
+                🍽️ Almoço
+            </span>
+        </label>
+
+
+        <label>
+            <input type="checkbox">
+            <span>
+                🛍️ Continuar compras
+            </span>
+        </label>
+
+
+        <label>
+            <input type="checkbox">
+            <span>
+                🏨 Voltar para o hotel
+            </span>
+        </label>
+
+
+        <label>
+            <input type="checkbox">
+            <span>
+                😴 Descansar bastante
+            </span>
+        </label>
+
+    </div>
+
+</article>
+
+
+
+<!-- ================= DIA 26 ================= -->
+
+<article
+    class="day-card reveal"
+>
+
+    <div class="date">
+
+        26
+
+        <span>
+            AGO
+        </span>
+
+    </div>
+
+
+    <div class="day-head">
+
+        <span class="day-number">
+            03
+        </span>
+
+        <h3>
+            Praia + Shopping 🌊🛍️
+        </h3>
+
+    </div>
+
+
+    <p class="description">
+
+        Dia de areia, mar, comida boa
+        e shopping depois do almoço.
+
+    </p>
+
+
+    <div class="timeline">
+
+        <label>
+            <input type="checkbox">
+            <span>
+                ☀️ Praia do Futuro
+            </span>
+        </label>
+
+
+        <label>
+            <input type="checkbox">
+            <span>
+                🏖️ Praia + barracas
+            </span>
+        </label>
+
+
+        <label>
+            <input type="checkbox">
+            <span>
+                🍽️ Almoço na praia
+            </span>
+        </label>
+
+
+        <label>
+            <input type="checkbox">
+            <span>
+                🛍️ Shopping à tarde
+            </span>
+        </label>
+
+
+        <label>
+            <input type="checkbox">
+            <span>
+                🍿 Lanche / cinema
+            </span>
+        </label>
+
+
+        <label>
+            <input type="checkbox">
+            <span>
+                🍽️ Jantar
+            </span>
+        </label>
+
+    </div>
+
+
+    <div class="note">
+
+        Praia do Futuro é conhecida
+        pelas barracas com estrutura
+        para passar o dia.
+
+    </div>
+
+</article>
+
+
+
+<!-- ================= DIA 27 ================= -->
+
+<article
+    class="day-card reveal"
+>
+
+    <div class="date">
+
+        27
+
+        <span>
+            AGO
+        </span>
+
+    </div>
+
+
+    <div class="day-head">
+
+        <span class="day-number">
+            04
+        </span>
+
+        <h3>
+            Mercados + Praia 🏛️🌊
+        </h3>
+
+    </div>
+
+
+    <p class="description">
+
+        Um dia misturando mar,
+        história, arquitetura
+        e artesanato.
+
+    </p>
+
+
+    <div class="timeline">
+
+        <label>
+            <input type="checkbox">
+            <span>
+                ☀️ Praia de Iracema
+            </span>
+        </label>
+
+
+        <label>
+            <input type="checkbox">
+            <span>
+                🍽️ Almoço
+            </span>
+        </label>
+
+
+        <label>
+            <input type="checkbox">
+            <span>
+                🏛️ Mercado Central de Fortaleza
+            </span>
+        </label>
+
+
+        <label>
+            <input type="checkbox">
+            <span>
+                🛍️ Artesanato e lembranças
+            </span>
+        </label>
+
+
+        <label>
+            <input type="checkbox">
+            <span>
+                ⛪ Catedral de Fortaleza
+            </span>
+        </label>
+
+
+        <label>
+            <input type="checkbox">
+            <span>
+                🌊 Final de tarde na Praia de Iracema
+            </span>
+        </label>
+
+
+        <label>
+            <input type="checkbox">
+            <span>
+                🌙 Noite livre
+            </span>
+        </label>
+
+    </div>
+
+</article>
+
+
+
+<!-- ================= DIA 28 ================= -->
+
+<article
+    class="day-card highlight reveal"
+>
+
+    <div class="date">
+
+        28
+
+        <span>
+            AGO
+        </span>
+
+    </div>
+
+
+    <div class="day-head">
+
+        <span class="day-number">
+            05
+        </span>
+
+        <h3>
+            Beach Park 🎢🌊
+        </h3>
+
+    </div>
+
+
+    <p class="description">
+
+        Um dia inteiro dedicado
+        a diversão, água
+        e adrenalina.
+
+    </p>
+
+
+    <div class="timeline">
+
+        <label>
+            <input type="checkbox">
+            <span>
+                ☀️ Saída cedo
+            </span>
+        </label>
+
+
+        <label>
+            <input type="checkbox">
+            <span>
+                🎢 Beach Park
+            </span>
+        </label>
+
+
+        <label>
+            <input type="checkbox">
+            <span>
+                🍽️ Almoço
+            </span>
+        </label>
+
+
+        <label>
+            <input type="checkbox">
+            <span>
+                🌊 Parque durante o dia inteiro
+            </span>
+        </label>
+
+
+        <label>
+            <input type="checkbox">
+            <span>
+                🚗 Retorno para Fortaleza
+            </span>
+        </label>
+
+
+        <label>
+            <input type="checkbox">
+            <span>
+                😴 Descanso
+            </span>
+        </label>
+
+    </div>
+
+</article>
+
+
+
+<!-- ================= DIA 29 ================= -->
+
+<article
+    class="day-card reveal"
+>
+
+    <div class="date">
+
+        29
+
+        <span>
+            AGO
+        </span>
+
+    </div>
+
+
+    <div class="day-head">
+
+        <span class="day-number">
+            06
+        </span>
+
+        <h3>
+            Praia + MIS 🎞️🌊
+        </h3>
+
+    </div>
+
+
+    <p class="description">
+
+        Mar pela manhã e uma pausa
+        cultural no Museu da Imagem
+        e do Som.
+
+    </p>
+
+
+    <div class="timeline">
+
+        <label>
+            <input type="checkbox">
+            <span>
+                ☀️ Praia de Meireles
+            </span>
+        </label>
+
+
+        <label>
+            <input type="checkbox">
+            <span>
+                🍽️ Almoço
+            </span>
+        </label>
+
+
+        <label>
+            <input type="checkbox">
+            <span>
+                🎞️ Museu da Imagem e do Som do Ceará
+            </span>
+        </label>
+
+
+        <label>
+            <input type="checkbox">
+            <span>
+                📸 Passeio cultural
+            </span>
+        </label>
+
+
+        <label>
+            <input type="checkbox">
+            <span>
+                🌅 Beira-Mar
+            </span>
+        </label>
+
+
+        <label>
+            <input type="checkbox">
+            <span>
+                🍽️ Jantar
+            </span>
+        </label>
+
+    </div>
+
+
+    <div class="note">
+
+        MIS Ceará — Av. Barão de Studart,
+        Meireles.
+
+    </div>
+
+</article>
+
+
+
+<!-- ================= DIA 30 ================= -->
+
+<article
+    class="day-card reveal"
+>
+
+    <div class="date">
+
+        30
+
+        <span>
+            AGO
+        </span>
+
+    </div>
+
+
+    <div class="day-head">
+
+        <span class="day-number">
+            07
+        </span>
+
+        <h3>
+            Praia + Shopping 🌴🛍️
+        </h3>
+
+    </div>
+
+
+    <p class="description">
+
+        Uma manhã de mar seguida
+        por uma tarde mais urbana.
+
+    </p>
+
+
+    <div class="timeline">
+
+        <label>
+            <input type="checkbox">
+            <span>
+                ☀️ Praia do Mucuripe
+            </span>
+        </label>
+
+
+        <label>
+            <input type="checkbox">
+            <span>
+                🏖️ Praia pela manhã
+            </span>
+        </label>
+
+
+        <label>
+            <input type="checkbox">
+            <span>
+                🍽️ Almoço
+            </span>
+        </label>
+
+
+        <label>
+            <input type="checkbox">
+            <span>
+                🛍️ Shopping à tarde
+            </span>
+        </label>
+
+
+        <label>
+            <input type="checkbox">
+            <span>
+                🌙 Jantar
+            </span>
+        </label>
+
+    </div>
+
+</article>
+
+
+
+<!-- ================= DIA 01 ================= -->
+
+<article
+    class="day-card final-day reveal"
+>
+
+    <div class="date">
+
+        01
+
+        <span>
+            SET
+        </span>
+
+    </div>
+
+
+    <div class="day-head">
+
+        <span class="day-number">
+            08
+        </span>
+
+        <h3>
+            Mucuripe + Mercado dos Peixes 🐟🌊
+        </h3>
+
+    </div>
+
+
+    <p class="description">
+
+        Último capítulo:
+        mar, Beira-Mar, fotos
+        e um jantar especial.
+
+    </p>
+
+
+    <div class="timeline">
+
+        <label>
+            <input type="checkbox">
+            <span>
+                ☀️ Praia do Mucuripe
+            </span>
+        </label>
+
+
+        <label>
+            <input type="checkbox">
+            <span>
+                🍽️ Almoço
+            </span>
+        </label>
+
+
+        <label>
+            <input type="checkbox">
+            <span>
+                🐟 Mercado dos Peixes
+            </span>
+        </label>
+
+
+        <label>
+            <input type="checkbox">
+            <span>
+                🌊 Passeio pela Beira-Mar
+            </span>
+        </label>
+
+
+        <label>
+            <input type="checkbox">
+            <span>
+                📸 Fotos
+            </span>
+        </label>
+
+
+        <label>
+            <input type="checkbox">
+            <span>
+                🔥 Esttaleiro Parrilla do Mar — jantar
+            </span>
+        </label>
+
+    </div>
+
+</article>
+
+
+</section>
+
+
+
+<!-- =====================================================
+     ENDEREÇOS
+===================================================== -->
+
+<section
+    class="addresses reveal"
+    id="enderecos"
+>
+
+
+    <div class="addresses-header">
+
+        <div>
+
+            <p class="eyebrow">
+                TRAVEL MAP
+            </p>
+
+
+            <h2>
+                Onde vamos?
+            </h2>
+
+        </div>
+
+
+        <p>
+
+            Todos os lugares importantes
+            do roteiro reunidos em um
+            só lugar.
+
+            <br><br>
+
+            Toque em
+            <strong>
+                Abrir no mapa
+            </strong>
+            para navegar.
+
+        </p>
+
+    </div>
+
+
+
+    <div class="address-grid">
+
+
+<!-- MEIRELES -->
+
+<article class="address-card">
+
+    <div class="address-icon">
+        🌊
+    </div>
+
+    <div>
+
+        <span class="address-type">
+            PRAIA
+        </span>
+
+        <h3>
+            Praia de Meireles
+        </h3>
+
+        <p>
+            Av. Beira-Mar,
+            Meireles,
+            Fortaleza — CE
+        </p>
+
+        <a
+            href="https://www.google.com/maps/search/?api=1&query=Praia+de+Meireles+Fortaleza+CE"
+            target="_blank"
+        >
+            Abrir no mapa ↗
+        </a>
+
+    </div>
+
+</article>
+
+
+
+<!-- BEIRA MAR -->
+
+<article class="address-card">
+
+    <div class="address-icon">
+        🌅
+    </div>
+
+    <div>
+
+        <span class="address-type">
+            ORLA
+        </span>
+
+        <h3>
+            Avenida Beira-Mar
+        </h3>
+
+        <p>
+            Av. Beira-Mar,
+            Fortaleza — CE
+        </p>
+
+        <a
+            href="https://www.google.com/maps/search/?api=1&query=Avenida+Beira+Mar+Fortaleza+CE"
+            target="_blank"
+        >
+            Abrir no mapa ↗
+        </a>
+
+    </div>
+
+</article>
+
+
+
+<!-- PRAIA DO FUTURO -->
+
+<article class="address-card">
+
+    <div class="address-icon">
+        🏖️
+    </div>
+
+    <div>
+
+        <span class="address-type">
+            PRAIA
+        </span>
+
+        <h3>
+            Praia do Futuro
+        </h3>
+
+        <p>
+            Praia do Futuro,
+            Fortaleza — CE
+        </p>
+
+        <a
+            href="https://www.google.com/maps/search/?api=1&query=Praia+do+Futuro+Fortaleza+CE"
+            target="_blank"
+        >
+            Abrir no mapa ↗
+        </a>
+
+    </div>
+
+</article>
+
+
+
+<!-- PRAIA DE IRACEMA -->
+
+<article class="address-card">
+
+    <div class="address-icon">
+        🌊
+    </div>
+
+    <div>
+
+        <span class="address-type">
+            PRAIA
+        </span>
+
+        <h3>
+            Praia de Iracema
+        </h3>
+
+        <p>
+            Praia de Iracema,
+            Fortaleza — CE
+        </p>
+
+        <a
+            href="https://www.google.com/maps/search/?api=1&query=Praia+de+Iracema+Fortaleza+CE"
+            target="_blank"
+        >
+            Abrir no mapa ↗
+        </a>
+
+    </div>
+
+</article>
+
+
+
+<!-- MERCADO CENTRAL -->
+
+<article class="address-card">
+
+    <div class="address-icon">
+        🏛️
+    </div>
+
+    <div>
+
+        <span class="address-type">
+            COMPRAS
+        </span>
+
+        <h3>
+            Mercado Central de Fortaleza
+        </h3>
+
+        <p>
+            Av. Alberto Nepomuceno, 199 —
+            Centro,
+            Fortaleza — CE
+        </p>
+
+        <a
+            href="https://www.google.com/maps/search/?api=1&query=Mercado+Central+de+Fortaleza"
+            target="_blank"
+        >
+            Abrir no mapa ↗
+        </a>
+
+    </div>
+
+</article>
+
+
+
+<!-- CATEDRAL -->
+
+<article class="address-card">
+
+    <div class="address-icon">
+        ⛪
+    </div>
+
+    <div>
+
+        <span class="address-type">
+            CULTURA
+        </span>
+
+        <h3>
+            Catedral Metropolitana
+        </h3>
+
+        <p>
+            Praça da Sé,
+            Centro,
+            Fortaleza — CE
+        </p>
+
+        <a
+            href="https://www.google.com/maps/search/?api=1&query=Catedral+Metropolitana+de+Fortaleza"
+            target="_blank"
+        >
+            Abrir no mapa ↗
+        </a>
+
+    </div>
+
+</article>
+
+
+
+<!-- MIS -->
+
+<article class="address-card">
+
+    <div class="address-icon">
+        🎞️
+    </div>
+
+    <div>
+
+        <span class="address-type">
+            CULTURA
+        </span>
+
+        <h3>
+            Museu da Imagem e do Som do Ceará
+        </h3>
+
+        <p>
+            Av. Barão de Studart,
+            Meireles,
+            Fortaleza — CE
+        </p>
+
+        <a
+            href="https://www.google.com/maps/search/?api=1&query=Museu+da+Imagem+e+do+Som+do+Ceara+Fortaleza"
+            target="_blank"
+        >
+            Abrir no mapa ↗
+        </a>
+
+    </div>
+
+</article>
+
+
+
+<!-- MUCURIPE -->
+
+<article class="address-card">
+
+    <div class="address-icon">
+        🌴
+    </div>
+
+    <div>
+
+        <span class="address-type">
+            PRAIA
+        </span>
+
+        <h3>
+            Praia do Mucuripe
+        </h3>
+
+        <p>
+            Mucuripe,
+            Fortaleza — CE
+        </p>
+
+        <a
+            href="https://www.google.com/maps/search/?api=1&query=Praia+do+Mucuripe+Fortaleza+CE"
+            target="_blank"
+        >
+            Abrir no mapa ↗
+        </a>
+
+    </div>
+
+</article>
+
+
+
+<!-- MERCADO DOS PEIXES -->
+
+<article class="address-card">
+
+    <div class="address-icon">
+        🐟
+    </div>
+
+    <div>
+
+        <span class="address-type">
+            GASTRONOMIA
+        </span>
+
+        <h3>
+            Mercado dos Peixes
+        </h3>
+
+        <p>
+            Av. Beira-Mar, 3479 —
+            Mucuripe,
+            Fortaleza — CE
+        </p>
+
+        <a
+            href="https://www.google.com/maps/search/?api=1&query=Mercado+dos+Peixes+Fortaleza"
+            target="_blank"
+        >
+            Abrir no mapa ↗
+        </a>
+
+    </div>
+
+</article>
+
+
+
+<!-- BEACH PARK -->
+
+<article class="address-card">
+
+    <div class="address-icon">
+        🎢
+    </div>
+
+    <div>
+
+        <span class="address-type">
+            PASSEIO
+        </span>
+
+        <h3>
+            Beach Park
+        </h3>
+
+        <p>
+            Porto das Dunas,
+            Aquiraz — CE
+        </p>
+
+        <a
+            href="https://www.google.com/maps/search/?api=1&query=Beach+Park+Aquiraz+Ceara"
+            target="_blank"
+        >
+            Abrir no mapa ↗
+        </a>
+
+    </div>
+
+</article>
+
+
+
+<!-- ESTTALEIRO -->
+
+<article
+    class="address-card special-address"
+>
+
+    <div class="address-icon">
+        🔥
+    </div>
+
+    <div>
+
+        <span class="address-type">
+            JANTAR
+        </span>
+
+        <h3>
+            Esttaleiro Parrilla do Mar
+        </h3>
+
+        <p>
+            Rua Benedito Macêdo, 50 —
+            Cais do Porto,
+            Fortaleza — CE
+        </p>
+
+        <a
+            href="https://www.google.com/maps/search/?api=1&query=Esttaleiro+Parrilla+do+Mar+Fortaleza"
+            target="_blank"
+        >
+            Abrir no mapa ↗
+        </a>
+
+    </div>
+
+</article>
+
+
+</div>
+
+</section>
+
+
+
+<!-- =====================================================
+     GOOGLE MAPS
+===================================================== -->
+
+<section class="map-section reveal">
+
+    <p class="eyebrow">
+        MAPA
+    </p>
+
+
+    <h3>
+        Fortaleza no mapa 📍
+    </h3>
+
+
+    <p>
+        Abra o Google Maps e encontre
+        os principais pontos da viagem.
+    </p>
+
+
+    <a
+        class="map-button"
+        href="https://www.google.com/maps/search/Fortaleza,+Cear%C3%A1"
+        target="_blank"
+    >
+        Abrir Google Maps ↗
+    </a>
+
+</section>
+
+
+
+<!-- =====================================================
+     PROGRESSO
+===================================================== -->
+
+<section
+    class="progress-section reveal"
+>
+
+
+    <div class="progress-top">
+
+        <div>
+
+            <p class="eyebrow">
+                TRAVEL CHECKLIST
+            </p>
+
+
+            <h2>
+                Memórias desbloqueadas
+            </h2>
+
+        </div>
+
+
+        <strong id="progressText">
+            0%
+        </strong>
+
+    </div>
+
+
+
+    <div class="progress-bar">
+
+        <span id="progressBar"></span>
+
+    </div>
+
+
+    <p id="progressLabel">
+
+        Comece marcando os momentos
+        da viagem ✨
+
+    </p>
+
+</section>
+
+
+</main>
+
+
+
+<!-- =====================================================
+     FOOTER
+===================================================== -->
+
+<footer>
+
+    <p>
+        FORTALEZA’26
+    </p>
+
+
+    <span>
+        sol • mar • memórias 🌴
+    </span>
+
+</footer>
+
+
+
+<script>
+
+/* =====================================================
+   ANIMAÇÃO AO ROLAR
+===================================================== */
+
+const revealElements =
+document.querySelectorAll(".reveal");
+
+
+const revealObserver =
+new IntersectionObserver(
+
+    (entries) => {
+
+        entries.forEach(
+            entry => {
+
+                if(
+                    entry.isIntersecting
+                ){
+
+                    entry.target
+                        .classList
+                        .add("visible");
+
+
+                    revealObserver
+                        .unobserve(
+                            entry.target
+                        );
+
+                }
+
+            }
+        );
+
+    },
+
+    {
+        threshold:0.12
+    }
+
+);
+
+
+revealElements.forEach(
+    element => {
+
+        revealObserver
+            .observe(element);
+
+    }
+);
+
+
+
+/* =====================================================
+   CHECKLIST
+===================================================== */
+
+const checkboxes =
+document.querySelectorAll(
+    'input[type="checkbox"]'
+);
+
+
+const progressBar =
+document.getElementById(
+    "progressBar"
+);
+
+
+const progressText =
+document.getElementById(
+    "progressText"
+);
+
+
+const progressLabel =
+document.getElementById(
+    "progressLabel"
+);
+
+
+
+/* =====================================================
+   ATUALIZAR PROGRESSO
+===================================================== */
+
+function updateProgress(){
+
+    const completed =
+        [
+            ...checkboxes
+        ].filter(
+            checkbox =>
+            checkbox.checked
+        ).length;
+
+
+    const total =
+        checkboxes.length;
+
+
+    const percentage =
+        total === 0
+        ? 0
+        : Math.round(
+            (
+                completed /
+                total
+            ) * 100
+        );
+
+
+    progressBar.style.width =
+        percentage + "%";
+
+
+    progressText.textContent =
+        percentage + "%";
+
+
+
+    /* FRASES */
+
+    if(
+        percentage === 0
+    ){
+
+        progressLabel.textContent =
+            "Comece marcando os momentos da viagem ✨";
+
+    }
+
+    else if(
+        percentage < 25
+    ){
+
+        progressLabel.textContent =
+            "A viagem está só começando... 🌴";
+
+    }
+
+    else if(
+        percentage < 50
+    ){
+
+        progressLabel.textContent =
+            "Fortaleza já está rendendo memórias! 🌊";
+
+    }
+
+    else if(
+        percentage < 75
+    ){
+
+        progressLabel.textContent =
+            "Metade da viagem já está desbloqueada! ☀️";
+
+    }
+
+    else if(
+        percentage < 100
+    ){
+
+        progressLabel.textContent =
+            "Quase tudo desbloqueado. Tá chegando! 🔥";
+
+    }
+
+    else{
+
+        progressLabel.textContent =
+            "ROTEIRO 100% CONCLUÍDO — agora é guardar as memórias. 🥹🌴";
+
+    }
+
+
+    /* SALVAR */
+
+    localStorage.setItem(
+
+        "fortalezaChecklist",
+
+        JSON.stringify(
+
+            [
+                ...checkboxes
+            ].map(
+                checkbox =>
+                checkbox.checked
+            )
+
+        )
+
+    );
+
+}
+
+
+
+/* =====================================================
+   RECUPERAR PROGRESSO
+===================================================== */
+
+const savedChecklist =
+JSON.parse(
+
+    localStorage.getItem(
+        "fortalezaChecklist"
+    ) || "[]"
+
+);
+
+
+checkboxes.forEach(
+
+    (
+        checkbox,
+        index
+    ) => {
+
+
+        if(
+            savedChecklist[index]
+        ){
+
+            checkbox.checked =
+                true;
+
+        }
+
+
+        checkbox.addEventListener(
+            "change",
+            updateProgress
+        );
+
+    }
+
+);
+
+
+
+/* =====================================================
+   INICIALIZAR
+===================================================== */
+
+updateProgress();
+
+
+</script>
+
+
+</body>
+
+</html>
